@@ -3,7 +3,7 @@ import "./Chat.css";
 import { MyContext } from "./store/MyContext";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark.css"
+import "highlight.js/styles/github-dark.css";
 
 // react-markdown
 // rehype-highlight
@@ -13,27 +13,30 @@ function Chat() {
   const { newChat, prevChats, reply } = useContext(MyContext);
 
   useEffect(() => {
+    if (reply === null) {
+      setLatestReply(null);
+      return;
+    }
 
-    if(!prevChats?.length) return;
+    if (!prevChats?.length) return;
 
     const content = reply.split(" "); //individual words are stored
     // const content = reply; // character by character output
 
     let idx = 0;
     const interval = setInterval(() => {
-        setLatestReply(content.slice(0, idx+1).join(" ")); // individual word output
-        
-        // setLatestReply(content.slice(0, idx+1)); // character by character output
-        idx++;
-        if(idx >= content.length){
-          clearInterval(interval);
-        }
+      setLatestReply(content.slice(0, idx + 1).join(" ")); // individual word output
+
+      // setLatestReply(content.slice(0, idx+1)); // character by character output
+      idx++;
+      if (idx >= content.length) {
+        clearInterval(interval);
+      }
     }, 40);
 
     return () => clearInterval(interval);
+  }, [prevChats, reply]);
 
-  }, [prevChats, reply])
-  
   return (
     <>
       {newChat && <h1>Where Should We Begin</h1>}
@@ -49,18 +52,27 @@ function Chat() {
               {chat.role === "user" ? (
                 <p className="userMessage">{chat.content}</p>
               ) : (
-                <ReactMarkdown rehypePlugins={[rehypeHighlight]} >{markdown}</ReactMarkdown>
+                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                  {markdown}
+                </ReactMarkdown>
               )}
             </div>
           );
         })}
 
-        {
-          prevChats?.length > 0 && latestReply !== null && 
+        {prevChats?.length > 0 && (latestReply !== null ? (
           <div className="gptDiv" key={"typing"}>
-            <ReactMarkdown rehypePlugins={[rehypeHighlight]} >{latestReply}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+              {latestReply}
+            </ReactMarkdown>
           </div>
-        }
+        ) : (
+          <div className="gptDiv" key={"non-typing"}>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+              {prevChats[prevChats.length - 1].content}
+            </ReactMarkdown>
+          </div>
+        ))}
 
       </div>
     </>

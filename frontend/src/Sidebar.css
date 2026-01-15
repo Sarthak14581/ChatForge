@@ -6,6 +6,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    /* overflow-y: scroll; */
 }
 
 button {
@@ -51,6 +52,7 @@ button span {
     margin-bottom: 0.3rem;
     font-size: 14px;
     border: solid 10px transparent;
+    position: relative;
 }
 
 .history li:hover {
@@ -63,4 +65,19 @@ button span {
     font-size: 14px;
     text-align: center;
     border-top: solid 0.25px rgba(255, 255, 255, 0.5);
+}
+
+.fa-trash {
+    opacity: 0;
+    position: absolute;
+    right: 0;
+}
+
+.history li:hover .fa-trash{
+    opacity: 1;
+    color: #fff;
+}
+
+.fa-trash:hover {
+    color: #f87171 !important;
 }

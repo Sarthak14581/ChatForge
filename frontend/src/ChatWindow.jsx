@@ -11,7 +11,7 @@ function ChatWindow() {
     prompt,
     setPrompt,
     currentThreadId,
-    prevChats,
+    setNewChat,
     setPrevChats,
   } = useContext(MyContext);
 
@@ -28,6 +28,8 @@ function ChatWindow() {
         threadId: currentThreadId,
       }),
     };
+    
+    setNewChat(false)
 
     try {
       setisLoading(true);
@@ -49,6 +51,7 @@ function ChatWindow() {
         { role: "user", content: prompt },
         { role: "assistant", content: reply },
       ]);
+      
     }
 
     setPrompt("");
