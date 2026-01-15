@@ -104,6 +104,7 @@ export default function Sidebar() {
             <li
               key={thread.threadId}
               onClick={() => changeThread(thread.threadId)}
+              className={currentThreadId === thread.threadId && "highlighted"}
             >
               {thread.title}
               <i
