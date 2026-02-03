@@ -5,8 +5,11 @@ import { MyContext } from "./store/MyContext";
 import { v1 as uuidv1 } from "uuid";
 import toast from "react-hot-toast";
 import { AuthContext } from "./store/AuthContext";
+import { useAuthenticatedFetch } from "./utils/api";
 
 export default function Sidebar() {
+  const authFetch = useAuthenticatedFetch();
+
   const {
     allThreads,
     setAllThreads,
@@ -19,14 +22,12 @@ export default function Sidebar() {
     setPrevChats,
   } = useContext(MyContext);
 
-  const {isLoggedIn} =  useContext(AuthContext)
+  const { isLoggedIn } = useContext(AuthContext);
 
   // get all the available threads and set them to allThreads
   const getAllThreads = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/thread", {
-        credentials: "include",
-      });
+      const response = await authFetch("http://localhost:8080/api/thread");
 
       if (response.ok) {
         const data = await response.json();
@@ -46,10 +47,9 @@ export default function Sidebar() {
 
   // whenever the current thread changes we have to get/refresh the thread history of the sidebar
   useEffect(() => {
-    if(isLoggedIn) {
+    if (isLoggedIn) {
       getAllThreads();
     }
-    
   }, [currentThreadId, isLoggedIn]);
 
   function startNewChat() {
@@ -68,11 +68,8 @@ export default function Sidebar() {
     setCurrentThreadId(newThreadId);
 
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `http://localhost:8080/api/thread/${newThreadId}`,
-        {
-          credentials: "include",
-        },
       );
       const data = await response.json();
       console.log(data);
@@ -89,11 +86,10 @@ export default function Sidebar() {
 
   async function deleteThread(threadId) {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `http://localhost:8080/api/thread/${threadId}`,
         {
           method: "DELETE",
-          credentials: "include",
         },
       );
       const data = await response.json();

@@ -7,8 +7,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./store/AuthContext.jsx";
 import { ThemeContext } from "./store/ThemeContext.jsx";
 import toast from "react-hot-toast";
+import { useAuthenticatedFetch } from "./utils/api.js";
 
 function ChatWindow() {
+
+  const authFetch = useAuthenticatedFetch();
+
   const {
     reply,
     setReply,
@@ -52,14 +56,17 @@ function ChatWindow() {
 
     try {
       setisLoading(true);
-      const response = await fetch("http://localhost:8080/api/chat", options);
-      // we get reply for the current prompt from the user
-      const data = await response.json();
+      const response = await authFetch("http://localhost:8080/api/chat", options);
+      
       // console.log(data);
 
       if (response.status === 401) {
         toast.error("Log In to Chat");
+        return ;
       }
+      
+      // we get reply for the current prompt from the user
+      const data = await response.json();
 
       // we set the reply from the gpt api
       setReply(data.reply);
@@ -97,7 +104,7 @@ function ChatWindow() {
 
   // logouts the user by sending post request to logut
   async function handleLogout() {
-    const response = await fetch("http://localhost:8080/gpt/logout", {
+    const response = await authFetch("http://localhost:8080/gpt/logout", {
       credentials: "include",
       method: "POST",
     });

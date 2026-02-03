@@ -1,8 +1,14 @@
 import "dotenv/config";
 
+export default async function summarizer(thread) {
+  const N = 10;
 
-// this functions returns reply from the model or it's api based on the message
-const getOpenAiApiResponse = async (message, context) => {
+  if (thread.summarizedUntil >= thread.messages.length) return;
+
+  const start = thread.summarizedUntil;
+  const end = start + N;
+  const firstNMessages = thread.messages.slice(start, start + N);
+  
 
   const options = {
     method: "POST",
@@ -13,31 +19,31 @@ const getOpenAiApiResponse = async (message, context) => {
     body: JSON.stringify({
       model: "gpt-4o-mini",
       messages: [
-        ...context,
+        {
+          role: "system",
+          content: "You are summarizing a conversation for long-term memory.",
+        },
         {
           role: "user",
-          content: message,
+          content:
+            "Summarize the following conversation, preserving key facts, decisions, and goals.",
         },
+        ...firstNMessages,
       ],
     }),
   };
 
-
-
   try {
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
-      options
+      options,
     );
 
     const data = await response.json();
 
     // console.log(data.choices[0].message.content);
-
     return data.choices[0].message.content; // reply we are returning
   } catch (error) {
     console.log(error);
   }
-};
-
-export default getOpenAiApiResponse;
+}

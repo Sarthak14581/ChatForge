@@ -33,5 +33,5 @@ export const jwtAuthMiddleware = (req, res, next) => {
 export const generateJwtToken = (userData) => {
   // generate a new token using user data
 
-  return jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: 60*60*5 });
 };

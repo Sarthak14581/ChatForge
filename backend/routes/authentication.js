@@ -33,7 +33,7 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       secure: false, // we will set true in production
       sameSite: "lax",
-      maxAge: 60 * 60 * 1000,
+      maxAge: 60 * 1000 * 5,
       path: "/",
     });
 

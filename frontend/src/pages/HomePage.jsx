@@ -3,15 +3,17 @@ import ChatWindow from "../ChatWindow";
 import ContextWrapper from "../store/MyContext.jsx";
 import  { AuthContext } from "../store/AuthContext.jsx";
 import { useContext, useEffect } from "react";
+import { useAuthenticatedFetch } from "../utils/api.js";
 
 function HomePage() {
+
+  const authFetch = useAuthenticatedFetch()
+
   const { setIsLoggedIn } = useContext(AuthContext);
   async function checkAuth() {
     console.log("useEffect run in home page");
     try {
-      const res = await fetch("http://localhost:8080/gpt/verify", {
-        credentials: "include",
-      });
+      const res = await authFetch("http://localhost:8080/gpt/verify");
       const user = await res.json();
       if (res.ok) {
         setIsLoggedIn(true);

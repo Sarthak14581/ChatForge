@@ -3,6 +3,8 @@ import Thread from "../models/Thread.js";
 import getOpenAiApiResponse from "../utils/openai.js";
 import { jwtAuthMiddleware } from "../middlewares/jwtAuth.js";
 import User from "../models/User.js";
+import summarizer from "../utils/summarizer.js";
+import getContextArray from "../utils/buildContext.js";
 
 const router = express.Router();
 
@@ -97,7 +99,7 @@ router.delete("/thread/:threadId", jwtAuthMiddleware, async (req, res) => {
       res.status(404).json({ error: "thread dosn't exist" });
     }
 
-    res.status(200).json({ message : "Thread Deleted Successfully" });
+    res.status(200).json({ message: "Thread Deleted Successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Failed to delete the thread" });
@@ -135,7 +137,22 @@ router.post("/chat", jwtAuthMiddleware, async (req, res) => {
       thread.messages.push({ role: "user", content: message });
     }
 
-    const assistantReply = await getOpenAiApiResponse(message);
+    const N = 10;
+    // check the unsummarized count
+    const unSummarizedCount = thread.messages.length - thread.summarizedUntil;
+    // first time we will summarize 0-9 messages 
+    // then for next time we will summarize 10-19 msgs 
+    // we will move window across the chats 
+    // but the first summ. happens late we allow backlog to grow 2N
+    if (unSummarizedCount > N * 2) {
+      const summary = await summarizer(thread);
+      thread.summary = thread.summary ? thread.summary + " " + summary : summary;
+      thread.summarizedUntil = thread.summarizedUntil + N;
+    }
+
+    const context = await getContextArray(thread);
+
+    const assistantReply = await getOpenAiApiResponse(message, context);
     thread.messages.push({ role: "assistant", content: assistantReply });
 
     thread.updatedAt = new Date();
@@ -146,7 +163,6 @@ router.post("/chat", jwtAuthMiddleware, async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "something went wrong" });
   }
-  
 });
 
 export default router;
