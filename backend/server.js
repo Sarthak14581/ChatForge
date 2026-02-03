@@ -3,15 +3,23 @@ import "dotenv/config";
 import cors from "cors";
 import mongoose from "mongoose";
 import chatRoutes from "./routes/chat.js";
+import authRoutes from "./routes/authentication.js"
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = 8080;
  
 // these are usefull when interacting with the frontend
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+    origin: "http://localhost:5173", // your frontend
+    credentials: true,               // 🔑 REQUIRED for cookie to store in the browser
+  }));
+
 
 app.use("/api", chatRoutes);
+app.use("/gpt", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);

@@ -20,11 +20,12 @@ export const MyContext = createContext({
 export default function ContextWrapper({children}) {
 
   const [prompt, setPrompt] = useState("");
-  const [reply, setReply] = useState(null);
-  const [currentThreadId, setCurrentThreadId] = useState(uuidv1());
+  const [reply, setReply] = useState(null); //we don't know what type of reply we are getting hence it is null
+  const [currentThreadId, setCurrentThreadId] = useState(uuidv1());  //we can start a new chat immediately
   const [prevChats, setPrevChats] = useState([]); // stores all chats of the current thread
-  const [newChat, setNewChat] = useState(true);
-  const [allThreads, setAllThreads] = useState([]);
+  const [newChat, setNewChat] = useState(true); // user always gets option to start new chat
+  const [allThreads, setAllThreads] = useState([]); // all threads that we use to show history
+  // const [isLoggedIn, setIsLoggedIn] = useState(false); // to reflect if user is logged in or not
 
   const providerValues = {
     prompt,

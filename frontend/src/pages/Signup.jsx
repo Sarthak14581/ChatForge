@@ -1,0 +1,49 @@
+import React from "react";
+import CustomForm from "../components/CustomForm";
+import { redirect } from "react-router-dom";
+import toast from "react-hot-toast";
+
+function Signup() {
+  return <CustomForm signup={true} />;
+}
+
+export async function action({ request }) {
+  const formData = await request.formData();
+
+  const data = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+    userName: formData.get("userName"),
+  };
+
+  console.log(data);
+
+  const response = await fetch("http://localhost:8080/gpt/signup", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const msg = await response.json();
+  console.log(response.status);
+
+  if(response.status === 409){
+    toast.error(msg.error);
+    return;
+  }
+
+  if(response.status === 422){
+    toast.error(msg.error);
+    return;
+  }
+
+  // if user is created successfully we will redirect it to home
+  if (response.status === 201) {
+    toast.success(msg.message);
+    toast.success("You are Logged In");
+    return redirect("/");
+  }
+}
+
+export default Signup;

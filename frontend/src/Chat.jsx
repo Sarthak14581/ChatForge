@@ -13,11 +13,15 @@ function Chat() {
   const { newChat, prevChats, reply } = useContext(MyContext);
 
   useEffect(() => {
+
+    // when we switch the thread or create a new chat,  we set reply to null
+    // if we don't do this we will do null.split(" ") and hit a error
     if (reply === null) {
       setLatestReply(null);
       return;
     }
 
+    // if there are no prevChats we can't add the typing effect so just return
     if (!prevChats?.length) return;
 
     const content = reply.split(" "); //individual words are stored
@@ -34,13 +38,17 @@ function Chat() {
       }
     }, 40);
 
+    // this is the cleanup function in the effect hook
     return () => clearInterval(interval);
+
+    //every time the reply changes or prevChats changes the effect re-runs
   }, [prevChats, reply]);
 
   return (
     <>
       {newChat && <h1>Where Should We Begin</h1>}
       <div className="chats">
+        {/* remove the last reply from the chat so we can print it with typing effect */}
         {prevChats?.slice(0, -1).map((chat, idx) => {
           const markdown = chat.content;
 
@@ -60,20 +68,23 @@ function Chat() {
           );
         })}
 
-        {prevChats?.length > 0 && (latestReply !== null ? (
-          <div className="gptDiv" key={"typing"}>
-            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-              {latestReply}
-            </ReactMarkdown>
-          </div>
-        ) : (
-          <div className="gptDiv" key={"non-typing"}>
-            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-              {prevChats[prevChats.length - 1].content}
-            </ReactMarkdown>
-          </div>
-        ))}
-
+        {/* there should exist chat and latest reply should not be null so it can be print by typing effect */}
+        {prevChats?.length > 0 &&
+          (latestReply !== null ? (
+            // if there is latest reply then print it with effect
+            <div className="gptDiv" key={"typing"}>
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                {latestReply}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            // if user has come again to the chat and doesn't have any latest reply yet just print the last msg from the prevChats
+            <div className="gptDiv" key={"non-typing"}>
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                {prevChats[prevChats.length - 1].content}
+              </ReactMarkdown>
+            </div>
+          ))}
       </div>
     </>
   );

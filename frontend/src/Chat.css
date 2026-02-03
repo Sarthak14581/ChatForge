@@ -2,7 +2,7 @@
     max-width: 700px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #212121 #323232;
+    scrollbar-color: var(--bg-primary) var(--bg-tertiary);
     padding: 8rem;
 }
 
@@ -19,7 +19,8 @@
 
 
 .userMessage {
-    background-color: #323232;
+    /* background-color: #323232; */
+    background-color: var(--user-message-bg);
     padding: 10px 20px;
     border-radius: 14px;
     margin-left: 15rem;

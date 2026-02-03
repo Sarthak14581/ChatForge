@@ -1,20 +1,47 @@
 import "./App.css";
-import Sidebar from "./Sidebar";
-import ChatWindow from "./ChatWindow";
-import ContextWrapper, { MyContext } from "./store/MyContext.jsx";
 
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import Login, { action as loginAction } from "./pages/Login";
+import Signup, { action as signupActions } from "./pages/Signup";
+import AuthContextProvider from "./store/AuthContext";
+import ContextWrapper from "./store/MyContext";
+import RootLayout from "./RootLayout";
+import ThemeContextProvider from "./store/ThemeContext";
 
-function App() {     
+const routes = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      {
+        path: "",
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+        action: loginAction,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
+        action: signupActions,
+      },
+    ],
+  },
+]);
 
-  
-
+function App() {
   return (
-    <div className="app">
-      <ContextWrapper>
-        <Sidebar />
-        <ChatWindow />
-      </ContextWrapper>
-    </div>
+    <ContextWrapper>
+      <AuthContextProvider>
+        <ThemeContextProvider>
+          <RouterProvider router={routes}></RouterProvider>
+        </ThemeContextProvider>
+      </AuthContextProvider>
+    </ContextWrapper>
   );
 }
 

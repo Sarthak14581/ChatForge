@@ -3,6 +3,8 @@ import "./Sidebar.css";
 import logoImage from "./assets/blacklogo.png";
 import { MyContext } from "./store/MyContext";
 import { v1 as uuidv1 } from "uuid";
+import toast from "react-hot-toast";
+import { AuthContext } from "./store/AuthContext";
 
 export default function Sidebar() {
   const {
@@ -17,28 +19,41 @@ export default function Sidebar() {
     setPrevChats,
   } = useContext(MyContext);
 
+  const {isLoggedIn} =  useContext(AuthContext)
+
+  // get all the available threads and set them to allThreads
   const getAllThreads = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/thread");
-      const data = await response.json();
+      const response = await fetch("http://localhost:8080/api/thread", {
+        credentials: "include",
+      });
 
-      // threadId, title
-      const filteredData = data.map((thread) => ({
-        threadId: thread.threadId,
-        title: thread.title,
-      }));
-      setAllThreads(filteredData);
-      console.log(filteredData);
+      if (response.ok) {
+        const data = await response.json();
+
+        // threadId, title
+        const filteredData = data.map((thread) => ({
+          threadId: thread.threadId,
+          title: thread.title,
+        }));
+        setAllThreads(filteredData);
+        console.log(filteredData);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
+  // whenever the current thread changes we have to get/refresh the thread history of the sidebar
   useEffect(() => {
-    getAllThreads();
-  }, [currentThreadId]);
+    if(isLoggedIn) {
+      getAllThreads();
+    }
+    
+  }, [currentThreadId, isLoggedIn]);
 
   function startNewChat() {
+    // if the prev chat was there then create a new chat otherwise the user is on the new chat
     if (prevChats.length) {
       setNewChat(true);
       setReply(null);
@@ -49,15 +64,20 @@ export default function Sidebar() {
   }
 
   async function changeThread(newThreadId) {
+    // set current thread id to load the current     chats of this thread
     setCurrentThreadId(newThreadId);
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/thread/${newThreadId}`
+        `http://localhost:8080/api/thread/${newThreadId}`,
+        {
+          credentials: "include",
+        },
       );
       const data = await response.json();
       console.log(data);
 
+      // set chat of the new current threadId
       setPrevChats(data);
       setNewChat(false);
       // setPrompt("")
@@ -67,16 +87,26 @@ export default function Sidebar() {
     }
   }
 
-
   async function deleteThread(threadId) {
     try {
-      const response = await fetch(`http://localhost:8080/api/thread/${threadId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/thread/${threadId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
       const data = await response.json();
-      setAllThreads(prev => prev.filter(thread => thread.threadId !== threadId));
 
-      if(threadId === currentThreadId) {
+      if (response.ok) {
+        toast.success(data.message);
+      }
+      // remove the deleted thread from the history
+      setAllThreads((prev) =>
+        prev.filter((thread) => thread.threadId !== threadId),
+      );
+
+      if (threadId === currentThreadId) {
         startNewChat();
       }
 
@@ -104,13 +134,15 @@ export default function Sidebar() {
             <li
               key={thread.threadId}
               onClick={() => changeThread(thread.threadId)}
-              className={currentThreadId === thread.threadId && "highlighted"}
+              className={
+                currentThreadId === thread.threadId ? "highlighted" : undefined
+              }
             >
               {thread.title}
               <i
                 className="fa-solid fa-trash"
                 onClick={(e) => {
-                  e.stopPropagation() //prevents event bubbling means event only happens on the trach icon not on the parent li
+                  e.stopPropagation(); //prevents event bubbling means event only happens on the trach icon not on the parent li
                   deleteThread(thread.threadId);
                 }}
               ></i>
