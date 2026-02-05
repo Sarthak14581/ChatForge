@@ -65,7 +65,7 @@ router.get("/thread/:threadId", jwtAuthMiddleware, async (req, res) => {
     const thread = await Thread.findOne({ threadId: threadId });
 
     if (!thread) {
-      res.status(404).json({ error: "Thread not found" });
+      return res.status(404).json({ error: "Thread not found" });
     }
 
     // sending all the  messages of the specific chat
@@ -96,7 +96,7 @@ router.delete("/thread/:threadId", jwtAuthMiddleware, async (req, res) => {
     await User.findByIdAndUpdate(id, { $pull: { chats: { threadId } } });
 
     if (!deletedThread) {
-      res.status(404).json({ error: "thread dosn't exist" });
+      return res.status(404).json({ error: "thread dosn't exist" });
     }
 
     res.status(200).json({ message: "Thread Deleted Successfully" });
@@ -113,7 +113,7 @@ router.post("/chat", jwtAuthMiddleware, async (req, res) => {
   const { id } = req.userPayload;
 
   if (!threadId || !message) {
-    res.status(404).json({ error: "Missing Required Fields" });
+    res.status(400).json({ error: "Missing Required Fields" });
   }
 
   try {

@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
+
 
 dotenv.config();
 
@@ -32,6 +34,9 @@ export const jwtAuthMiddleware = (req, res, next) => {
 // function to generate jwt token
 export const generateJwtToken = (userData) => {
   // generate a new token using user data
-
-  return jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: 60*60*5 });
+  return jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "15m" });
 };
+
+export const generateRefreshToken = (payload) => {
+  return jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "4d"});
+}

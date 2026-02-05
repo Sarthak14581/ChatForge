@@ -1,6 +1,6 @@
 import "./ChatWindow.css";
 import Chat from "./Chat.jsx";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MyContext } from "./store/MyContext.jsx";
 import { ScaleLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import { useAuthenticatedFetch } from "./utils/api.js";
 
 function ChatWindow() {
-
   const authFetch = useAuthenticatedFetch();
 
   const {
@@ -21,7 +20,7 @@ function ChatWindow() {
     currentThreadId,
     setNewChat,
     setPrevChats,
-    setAllThreads
+    setAllThreads,
   } = useContext(MyContext);
 
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
@@ -33,8 +32,7 @@ function ChatWindow() {
 
   // to get api response when user enters prompt
   async function getReply() {
-
-    if(prompt.trim().length <= 0){
+    if (prompt.trim().length <= 0) {
       toast.error("Please Enter Prompt");
       return;
     }
@@ -56,21 +54,28 @@ function ChatWindow() {
 
     try {
       setisLoading(true);
-      const response = await authFetch("http://localhost:8080/api/chat", options);
-      
+      const response = await authFetch(
+        "http://localhost:8080/api/chat",
+        options,
+      );
+
       // console.log(data);
 
       if (response.status === 401) {
         toast.error("Log In to Chat");
-        return ;
+        return;
       }
-      
+
       // we get reply for the current prompt from the user
       const data = await response.json();
 
       // we set the reply from the gpt api
       setReply(data.reply);
       setisLoading(false);
+
+      if (textAreaRef.current) {
+        textAreaRef.current.style.height = "auto";
+      }
     } catch (error) {
       console.log("Error to chat with the api", error);
     }
@@ -94,6 +99,11 @@ function ChatWindow() {
     // setting prompt to "" so user can enter next prompt
     setPrompt("");
 
+    // Reset textarea height
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+    }
+
     // if we add prompt in this array the effect will run at every key stroke
   }, [reply]);
 
@@ -104,10 +114,13 @@ function ChatWindow() {
 
   // logouts the user by sending post request to logut
   async function handleLogout() {
-    const response = await authFetch("http://localhost:8080/gpt/logout", {
-      credentials: "include",
-      method: "POST",
-    });
+    const response = await authFetch(
+      "http://localhost:8080/gpt/refresh/logout",
+      {
+        credentials: "include",
+        method: "POST",
+      },
+    );
 
     if (response.ok) {
       toast.success("You are Logged Out");
@@ -117,12 +130,24 @@ function ChatWindow() {
     setPrevChats([]);
     setPrompt("");
     setReply(null);
-    setAllThreads([])
-    setNewChat(true)
+    setAllThreads([]);
+    setNewChat(true);
   }
 
   function handleTheme() {
     toggleTheme();
+  }
+
+  const textAreaRef = useRef(null);
+
+  function handleTextareaChange(event) {
+    setPrompt(event.target.value);
+
+    const textarea = textAreaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // Reset height
+      textarea.style.height = `${textarea.scrollHeight}px`; // Set to scroll height
+    }
   }
 
   return (
@@ -173,17 +198,30 @@ function ChatWindow() {
 
       <Chat></Chat>
 
-      <ScaleLoader loading={isLoading} color={theme === "dark" ? "#fff" : "#000"} />
+      <ScaleLoader
+        loading={isLoading}
+        color={theme === "dark" ? "#fff" : "#000"}
+      />
 
       <div className="chatInput">
         <div className="inputBox">
-          <input
+          <textarea
+            ref={textAreaRef}
             placeholder="Ask Anything"
             name="prompt"
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => e.key == "Enter" && getReply()}
+            onChange={handleTextareaChange}
+            onKeyDown={(e) => {
+              if (e.key == "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                getReply();
+              }
+            }}
             disabled={isLoading}
+            // rows={1}
+            style={{
+              resize: "none",
+            }}
           />
           <div id="submit" onClick={getReply}>
             <i className="fa-solid fa-paper-plane"></i>

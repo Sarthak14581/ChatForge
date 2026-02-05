@@ -57,12 +57,13 @@
     align-items: center;
 }
 
-.inputBox input {
+.inputBox textarea {
     width: 100%;
     border: none;
     /* background-color: rgba(255, 255, 255, 0.05); */
     background-color: var(--bg-input);
     padding: 20px;
+    padding-right: 60px;
     font-size: 0.8rem;    
     border-radius: 14px;
     box-shadow: rgba(0, 0, 0, 0.05) 0 54px 55px,
@@ -70,6 +71,18 @@
                 rgba(0, 0, 0, 0.05) 0 4px 6px
                 rgba(0, 0, 0, 0.05) 0 12px 3px
                 rgba(0, 0, 0, 0.05) 0 -3px 5px;
+  min-height: 56px;
+  box-sizing: border-box;
+  max-height: 200px; 
+  overflow-y: auto;  
+  scrollbar-color: var(--bg-primary) var(--bg-tertiary);
+  font-family: inherit; 
+  line-height: 1.5;    
+
+}
+
+.inputBox textarea:focus {
+    outline: none;
 }
 
 input:focus {
@@ -86,7 +99,6 @@ input:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    
 }
 
 #submit i:hover {
