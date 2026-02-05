@@ -9,6 +9,8 @@ import { logger } from "../utils/logger";
 function Login() {
   const validationErrors = useActionData();
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
   return <CustomForm validationErrors={validationErrors} />;
 }
 
@@ -26,12 +28,15 @@ export async function action({ request }) {
     );
   }
   // we got data from the Form which is in the login.jsx
-  const response = await fetch("http://localhost:8080/gpt/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include", // Add this line
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    `${API_BASE_URL ? API_BASE_URL : "http://localhost:8080"}/gpt/login`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // Add this line
+      body: JSON.stringify(data),
+    },
+  );
 
   const res = await response.json();
 

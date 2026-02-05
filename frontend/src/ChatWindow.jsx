@@ -58,7 +58,7 @@ function ChatWindow() {
     try {
       setIsLoading(true);
       const response = await authFetch(
-        "http://localhost:8080/api/chat",
+        "/api/chat",
         options,
       );
 
@@ -119,7 +119,7 @@ function ChatWindow() {
   // logouts the user by sending post request to logut
   async function handleLogout() {
     const response = await authFetch(
-      "http://localhost:8080/gpt/refresh/logout",
+      "/gpt/refresh/logout",
       {
         credentials: "include",
         method: "POST",

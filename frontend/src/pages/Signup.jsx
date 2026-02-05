@@ -11,6 +11,8 @@ function Signup() {
 export async function action({ request }) {
   const formData = await request.formData();
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
   const data = {
     email: formData.get("email"),
     password: formData.get("password"),
@@ -19,22 +21,25 @@ export async function action({ request }) {
 
   logger.debug(data);
 
-  const response = await fetch("http://localhost:8080/gpt/signup", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    `${API_BASE_URL ? API_BASE_URL : "http://localhost:8080"}/gpt/signup`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    },
+  );
 
   const msg = await response.json();
   logger.debug(response.status);
 
-  if(response.status === 409){
+  if (response.status === 409) {
     toast.error(msg.error);
     return;
   }
 
-  if(response.status === 422){
+  if (response.status === 422) {
     toast.error(msg.error);
     return;
   }

@@ -10,11 +10,19 @@ export function useAuthenticatedFetch() {
 
   const navigate = useNavigate();
 
-  const { setAllThreads, setNewChat, setPrevChats, setPrompt, setReply, setIsLoading } =
-    useContext(MyContext);
+  const {
+    setAllThreads,
+    setNewChat,
+    setPrevChats,
+    setPrompt,
+    setReply,
+    setIsLoading,
+  } = useContext(MyContext);
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
   const authenticatedFetch = async (url, options = {}) => {
-    let response = await fetch(url, {
+    let response = await fetch(API_BASE_URL + url, {
       ...options,
       credentials: "include",
     });
@@ -22,7 +30,7 @@ export function useAuthenticatedFetch() {
     // Check for 401 Unauthorized
     if (response.status === 401) {
       logger.debug("Access token expired, attempting refresh...");
-      const refreshResponse = await fetch("http://localhost:8080/gpt/refresh", {
+      const refreshResponse = await fetch(`${API_BASE_URL ? API_BASE_URL : "http://localhost:8080"}/gpt/refresh`, {
         method: "POST",
         credentials: "include",
       });
@@ -36,7 +44,7 @@ export function useAuthenticatedFetch() {
         // Automatically logout
         logger.debug("Refresh token expired, logging out...");
         const logoutResponse = await fetch(
-          "http://localhost:8080/gpt/refresh/logout",
+          `${API_BASE_URL ? API_BASE_URL : "http://localhost:8080"}/gpt/refresh/logout`,
           {
             method: "POST",
             credentials: "include",

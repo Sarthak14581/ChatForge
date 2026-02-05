@@ -28,7 +28,7 @@ export default function Sidebar() {
   // get all the available threads and set them to allThreads
   const getAllThreads = async () => {
     try {
-      const response = await authFetch("http://localhost:8080/api/thread");
+      const response = await authFetch("/api/thread");
 
       if (response.ok) {
         const data = await response.json();
@@ -70,7 +70,7 @@ export default function Sidebar() {
 
     try {
       const response = await authFetch(
-        `http://localhost:8080/api/thread/${newThreadId}`,
+        `/api/thread/${newThreadId}`,
       );
       const data = await response.json();
       logger.debug(data);
@@ -88,7 +88,7 @@ export default function Sidebar() {
   async function deleteThread(threadId) {
     try {
       const response = await authFetch(
-        `http://localhost:8080/api/thread/${threadId}`,
+        `/api/thread/${threadId}`,
         {
           method: "DELETE",
         },
