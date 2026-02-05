@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
+import { logger } from "../utils/logger.js";
 
 
 dotenv.config();
 
 export const jwtAuthMiddleware = (req, res, next) => {
   
-
-    // console.log("auth token in middeware: ", req.cookies.token);
+    // logger.debug("auth token in middeware: ", req.cookies.token)
     // check if autharization header is passed
     if(!req.cookies.token) return res.status(401).json({error: "Token Not Found"});
   
@@ -26,7 +26,7 @@ export const jwtAuthMiddleware = (req, res, next) => {
     req.userPayload = decoded;
     next();
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(401).json({ erroe: "Invalid Token" });
   }
 };

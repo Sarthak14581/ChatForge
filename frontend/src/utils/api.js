@@ -3,6 +3,7 @@ import { AuthContext } from "../store/AuthContext";
 import toast from "react-hot-toast";
 import { MyContext } from "../store/MyContext";
 import { useNavigate } from "react-router-dom";
+import { logger } from "./logger.js";
 
 export function useAuthenticatedFetch() {
   const { setIsLoggedIn } = useContext(AuthContext);
@@ -20,20 +21,20 @@ export function useAuthenticatedFetch() {
 
     // Check for 401 Unauthorized
     if (response.status === 401) {
-      console.log("Access token expired, attempting refresh...");
+      logger.debug("Access token expired, attempting refresh...")
       const refreshResponse = await fetch("http://localhost:8080/gpt/refresh", {
         method: "POST",
         credentials: "include",
       });
 
       if (refreshResponse.ok) {
-        console.log("Token refreshed successfully!");
+        logger.debug("Token refreshed successfully!")
 
         response = await fetch(url, { ...options, credentials: "include" });
         return response;
       } else {
         // Automatically logout
-        console.log("Refresh token expired, logging out...");
+        logger.debug("Refresh token expired, logging out...")
         setIsLoggedIn(false);
         setPrevChats([]);
         setPrompt("");

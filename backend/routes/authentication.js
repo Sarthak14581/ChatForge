@@ -8,6 +8,7 @@ import { hashedPassword, comparePassword } from "../utils/hash.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
+import { logger } from "../utils/logger.js";
 
 dotenv.config();
 
@@ -23,7 +24,8 @@ router.post("/login", async (req, res) => {
     // if (!user) return res.status(404).json({ error: "User not found" });
 
     const isPasswordCorrect = await comparePassword(password, user.password);
-    console.log(isPasswordCorrect);
+    logger.debug(isPasswordCorrect)
+
     if (!isPasswordCorrect || !user)
       return res.status(401).json({ error: "Wrong Email or Password" });
 
@@ -35,7 +37,9 @@ router.post("/login", async (req, res) => {
       userId: user.id,
       tokenId: tokenId,
     });
-    // console.log(token);
+
+    // logger.debug(token)
+   
     user.refreshTokens.push(tokenId);
     await user.save();
     // we will store token in http only cookie
@@ -58,7 +62,7 @@ router.post("/login", async (req, res) => {
 
     res.status(200).json({ message: "You are logged in" });
   } catch (error) {
-    console.log("Error in login route", error);
+    logger.error("Error in login route", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -68,7 +72,7 @@ router.post("/signup", async (req, res) => {
 
   const existingUser = await User.findOne({ email: email });
 
-  console.log("existing user: ", existingUser);
+  logger.debug("existing user: ", existingUser)
 
   if (!userName || !email || !password) {
     return res.status(422).json({ error: "All fields are mandatory" });
@@ -85,7 +89,7 @@ router.post("/signup", async (req, res) => {
     const hashPassword = await hashedPassword(password);
     const user = User({ userName, email, password: hashPassword });
     const newUser = await user.save();
-    console.log("new user: ", user);
+    logger.debug("new user: ", user)
 
     // generating token using payload as userData
     const payload = {
@@ -94,7 +98,8 @@ router.post("/signup", async (req, res) => {
     };
 
     const token = generateJwtToken(payload);
-    console.log("Token is: ", token);
+    logger.debug("Token is: ", token)
+
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -119,7 +124,7 @@ router.post("/signup", async (req, res) => {
 
     return res.status(201).json({ message: "new user created successfully" });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -128,7 +133,7 @@ router.post("/signup", async (req, res) => {
 router.get("/verify", async (req, res) => {
   const token = req.cookies.token;
 
-  // console.log(token);
+  // logger.debug(token);
 
   if (!token) return res.status(401).json({ error: "Not Authenticated" });
 
@@ -138,7 +143,7 @@ router.get("/verify", async (req, res) => {
     req.user = decoded;
     res.json({ user: decoded });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(401).json({ message: "Invalid token" });
   }
 });
@@ -149,7 +154,8 @@ router.post("/refresh/logout", async (req, res) => {
     const token = req.cookies.token;
     const refreshToken = req.cookies.refreshToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
+    logger.debug(decoded)
+    
     const { id } = decoded;
     const { tokenId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
     await User.findByIdAndUpdate(id, { $pull: { refreshTokens: tokenId } });
@@ -157,7 +163,7 @@ router.post("/refresh/logout", async (req, res) => {
     res.clearCookie("refreshToken", { path: "/gpt/refresh" });
     res.status(200).json({ message: "Log Out" });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({error: "Internal Server Error"})
   }
 });
@@ -193,7 +199,7 @@ router.post("/refresh", async (req, res) => {
     });
     return res.status(200).json({ message: "Session Refreshed" });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(401).json({ error: "Session Expired" });
   }
 });

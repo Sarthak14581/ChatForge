@@ -2,6 +2,7 @@ import React from "react";
 import CustomForm from "../components/CustomForm";
 import { redirect } from "react-router-dom";
 import toast from "react-hot-toast";
+import { logger } from "../utils/logger";
 
 function Signup() {
   return <CustomForm signup={true} />;
@@ -16,7 +17,7 @@ export async function action({ request }) {
     userName: formData.get("userName"),
   };
 
-  console.log(data);
+  logger.debug(data);
 
   const response = await fetch("http://localhost:8080/gpt/signup", {
     method: "POST",
@@ -26,7 +27,7 @@ export async function action({ request }) {
   });
 
   const msg = await response.json();
-  console.log(response.status);
+  logger.debug(response.status);
 
   if(response.status === 409){
     toast.error(msg.error);

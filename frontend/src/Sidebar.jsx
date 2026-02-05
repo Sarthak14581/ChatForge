@@ -6,6 +6,7 @@ import { v1 as uuidv1 } from "uuid";
 import toast from "react-hot-toast";
 import { AuthContext } from "./store/AuthContext";
 import { useAuthenticatedFetch } from "./utils/api";
+import { logger } from "./utils/logger";
 
 export default function Sidebar() {
   const authFetch = useAuthenticatedFetch();
@@ -38,10 +39,10 @@ export default function Sidebar() {
           title: thread.title,
         }));
         setAllThreads(filteredData);
-        console.log(filteredData);
+        logger.debug(filteredData)
       }
     } catch (error) {
-      console.log(error);
+      logger.error(error)
     }
   };
 
@@ -72,7 +73,7 @@ export default function Sidebar() {
         `http://localhost:8080/api/thread/${newThreadId}`,
       );
       const data = await response.json();
-      console.log(data);
+      logger.debug(data);
 
       // set chat of the new current threadId
       setPrevChats(data);
@@ -80,7 +81,7 @@ export default function Sidebar() {
       // setPrompt("")
       setReply(null);
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 
@@ -106,9 +107,9 @@ export default function Sidebar() {
         startNewChat();
       }
 
-      console.log(data);
+      logger.debug(data);
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 

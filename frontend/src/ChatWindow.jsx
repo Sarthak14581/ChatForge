@@ -8,6 +8,7 @@ import { AuthContext } from "./store/AuthContext.jsx";
 import { ThemeContext } from "./store/ThemeContext.jsx";
 import toast from "react-hot-toast";
 import { useAuthenticatedFetch } from "./utils/api.js";
+import { logger } from "./utils/logger.js";
 
 function ChatWindow() {
   const authFetch = useAuthenticatedFetch();
@@ -59,7 +60,8 @@ function ChatWindow() {
         options,
       );
 
-      // console.log(data);
+      
+      
 
       if (response.status === 401) {
         toast.error("Log In to Chat");
@@ -68,7 +70,7 @@ function ChatWindow() {
 
       // we get reply for the current prompt from the user
       const data = await response.json();
-
+      logger.debug("Data in getReply chatwindow",data);
       // we set the reply from the gpt api
       setReply(data.reply);
       setisLoading(false);
@@ -77,7 +79,7 @@ function ChatWindow() {
         textAreaRef.current.style.height = "auto";
       }
     } catch (error) {
-      console.log("Error to chat with the api", error);
+      logger.error("Error to chat with the api", error);
     }
   }
 

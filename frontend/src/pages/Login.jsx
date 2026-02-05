@@ -4,6 +4,7 @@ import CustomForm from "../components/CustomForm";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../store/AuthContext";
 import toast from "react-hot-toast";
+import { logger } from "../utils/logger";
 
 function Login() {
   const validationErrors = useActionData();
@@ -34,7 +35,7 @@ export async function action({ request }) {
 
   const res = await response.json();
 
-  console.log(res);
+  logger.debug(res);
 
   if (response.ok) {
     toast.success("Logged In Successfully");

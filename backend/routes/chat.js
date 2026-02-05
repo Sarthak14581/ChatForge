@@ -5,6 +5,7 @@ import { jwtAuthMiddleware } from "../middlewares/jwtAuth.js";
 import User from "../models/User.js";
 import summarizer from "../utils/summarizer.js";
 import getContextArray from "../utils/buildContext.js";
+import { logger } from "../utils/logger.js";
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.post("/test", async (req, res) => {
     const response = await thread.save();
     res.send(response);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({ error: "Failed to save in db!" });
   }
 });
@@ -41,7 +42,7 @@ router.get("/thread", jwtAuthMiddleware, async (req, res) => {
 
     res.json(threads);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({ error: "Failed to fetch threads" });
   }
 });
@@ -71,7 +72,7 @@ router.get("/thread/:threadId", jwtAuthMiddleware, async (req, res) => {
     // sending all the  messages of the specific chat
     res.json(thread.messages);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({ error: "Failed to fetch thread" });
   }
 });
@@ -101,7 +102,7 @@ router.delete("/thread/:threadId", jwtAuthMiddleware, async (req, res) => {
 
     res.status(200).json({ message: "Thread Deleted Successfully" });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({ error: "Failed to delete the thread" });
   }
 });
@@ -160,7 +161,7 @@ router.post("/chat", jwtAuthMiddleware, async (req, res) => {
     await thread.save();
     res.json({ reply: assistantReply });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).json({ error: "something went wrong" });
   }
 });
