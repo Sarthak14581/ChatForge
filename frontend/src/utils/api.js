@@ -10,7 +10,7 @@ export function useAuthenticatedFetch() {
 
   const navigate = useNavigate();
 
-  const { setAllThreads, setNewChat, setPrevChats, setPrompt, setReply } =
+  const { setAllThreads, setNewChat, setPrevChats, setPrompt, setReply, setIsLoading } =
     useContext(MyContext);
 
   const authenticatedFetch = async (url, options = {}) => {
@@ -21,20 +21,28 @@ export function useAuthenticatedFetch() {
 
     // Check for 401 Unauthorized
     if (response.status === 401) {
-      logger.debug("Access token expired, attempting refresh...")
+      logger.debug("Access token expired, attempting refresh...");
       const refreshResponse = await fetch("http://localhost:8080/gpt/refresh", {
         method: "POST",
         credentials: "include",
       });
 
       if (refreshResponse.ok) {
-        logger.debug("Token refreshed successfully!")
+        logger.debug("Token refreshed successfully!");
 
         response = await fetch(url, { ...options, credentials: "include" });
         return response;
       } else {
         // Automatically logout
-        logger.debug("Refresh token expired, logging out...")
+        logger.debug("Refresh token expired, logging out...");
+        const logoutResponse = await fetch(
+          "http://localhost:8080/gpt/refresh/logout",
+          {
+            method: "POST",
+            credentials: "include",
+          },
+        );
+        setIsLoading(false);
         setIsLoggedIn(false);
         setPrevChats([]);
         setPrompt("");

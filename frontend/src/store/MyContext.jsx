@@ -15,6 +15,8 @@ export const MyContext = createContext({
   setNewChat: () => {},
   allThreads: [],
   setAllThreads: () => {},
+  isLoading: false,
+  setIsLoading: () => {}
 });
 
 export default function ContextWrapper({children}) {
@@ -26,6 +28,7 @@ export default function ContextWrapper({children}) {
   const [newChat, setNewChat] = useState(true); // user always gets option to start new chat
   const [allThreads, setAllThreads] = useState([]); // all threads that we use to show history
   // const [isLoggedIn, setIsLoggedIn] = useState(false); // to reflect if user is logged in or not
+  const [isLoading, setIsLoading] = useState(false);
 
   const providerValues = {
     prompt,
@@ -40,6 +43,8 @@ export default function ContextWrapper({children}) {
     setPrevChats,
     allThreads,
     setAllThreads,
+    isLoading,
+    setIsLoading
   };
 
   return <MyContext value={providerValues}>{children}</MyContext>;

@@ -13,7 +13,7 @@ const PORT = 8080;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173", // your frontend
+    origin: "https://your-frontend.vercel.app", // your frontend
     credentials: true,               // 🔑 REQUIRED for cookie to store in the browser
   }));
 

@@ -22,11 +22,13 @@ function ChatWindow() {
     setNewChat,
     setPrevChats,
     setAllThreads,
+    isLoading,
+    setIsLoading,
   } = useContext(MyContext);
 
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-  const [isLoading, setisLoading] = useState(false);
+  
   const [isOpen, setIsOpen] = useState(false);
 
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -54,7 +56,7 @@ function ChatWindow() {
     setNewChat(false);
 
     try {
-      setisLoading(true);
+      setIsLoading(true);
       const response = await authFetch(
         "http://localhost:8080/api/chat",
         options,
@@ -73,7 +75,7 @@ function ChatWindow() {
       logger.debug("Data in getReply chatwindow",data);
       // we set the reply from the gpt api
       setReply(data.reply);
-      setisLoading(false);
+      setIsLoading(false);
 
       if (textAreaRef.current) {
         textAreaRef.current.style.height = "auto";

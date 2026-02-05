@@ -21,7 +21,7 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email: email });
 
     // if user does not exist or password do not match return error res
-    // if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     const isPasswordCorrect = await comparePassword(password, user.password);
     logger.debug(isPasswordCorrect)
@@ -45,8 +45,8 @@ router.post("/login", async (req, res) => {
     // we will store token in http only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // we will set true in production
-      sameSite: "lax",
+      secure: true, // we will set true in production
+      sameSite: "none",
       maxAge: 1000 * 60 * 15,
       path: "/",
     });
@@ -54,8 +54,8 @@ router.post("/login", async (req, res) => {
     // setting refresh token
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 4,
       path: "gpt/refresh",
     });
@@ -103,8 +103,8 @@ router.post("/signup", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 1000 * 60 * 15,
       path: "/",
     });
@@ -117,8 +117,8 @@ router.post("/signup", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 4,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/gtp/refresh",
     });
 
@@ -163,7 +163,7 @@ router.post("/refresh/logout", async (req, res) => {
     res.clearCookie("refreshToken", { path: "/gpt/refresh" });
     res.status(200).json({ message: "Log Out" });
   } catch (error) {
-    logger.error(error);
+    logger.error("Auto logout error",error)
     res.status(500).json({error: "Internal Server Error"})
   }
 });
@@ -193,9 +193,9 @@ router.post("/refresh", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
-      secure: false,
+      secure: true,
       path: "/",
-      sameSite: "lax",
+      sameSite: "none",
     });
     return res.status(200).json({ message: "Session Refreshed" });
   } catch (error) {
