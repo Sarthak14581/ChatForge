@@ -24,7 +24,7 @@ router.post("/login", async (req, res) => {
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const isPasswordCorrect = await comparePassword(password, user.password);
-    logger.debug(isPasswordCorrect)
+    logger.debug(isPasswordCorrect);
 
     if (!isPasswordCorrect || !user)
       return res.status(401).json({ error: "Wrong Email or Password" });
@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
     });
 
     // logger.debug(token)
-   
+
     user.refreshTokens.push(tokenId);
     await user.save();
     // we will store token in http only cookie
@@ -72,7 +72,7 @@ router.post("/signup", async (req, res) => {
 
   const existingUser = await User.findOne({ email: email });
 
-  logger.debug("existing user: ", existingUser)
+  logger.debug("existing user: ", existingUser);
 
   if (!userName || !email || !password) {
     return res.status(422).json({ error: "All fields are mandatory" });
@@ -89,7 +89,7 @@ router.post("/signup", async (req, res) => {
     const hashPassword = await hashedPassword(password);
     const user = User({ userName, email, password: hashPassword });
     const newUser = await user.save();
-    logger.debug("new user: ", user)
+    logger.debug("new user: ", user);
 
     // generating token using payload as userData
     const payload = {
@@ -98,8 +98,7 @@ router.post("/signup", async (req, res) => {
     };
 
     const token = generateJwtToken(payload);
-    logger.debug("Token is: ", token)
-
+    logger.debug("Token is: ", token);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -150,22 +149,34 @@ router.get("/verify", async (req, res) => {
 
 // route to logout user from the frontend
 router.post("/refresh/logout", async (req, res) => {
-
   try {
     const token = req.cookies.token;
     const refreshToken = req.cookies.refreshToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     logger.debug(decoded);
-    
+
     const { id } = decoded;
     const { tokenId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
     await User.findByIdAndUpdate(id, { $pull: { refreshTokens: tokenId } });
-    res.clearCookie("token");
-    res.clearCookie("refreshToken", { path: "/gpt/refresh" });
+    
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/gpt/refresh",
+    });
+
     res.status(200).json({ message: "Log Out" });
   } catch (error) {
-    logger.error("Auto logout error",error)
-    res.status(500).json({error: "Internal Server Error"})
+    logger.error("Auto logout error", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -188,7 +199,7 @@ router.post("/refresh", async (req, res) => {
     // check if the token belongs to the user or not
     if (!user.refreshTokens.includes(tokenId)) {
       return res.status(401).json({ error: "Session revoked" });
-    } 
+    }
 
     const payload = { id: userId, userName: user.userName };
     const token = generateJwtToken(payload);
