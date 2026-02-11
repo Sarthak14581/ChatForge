@@ -9,12 +9,14 @@ import { logger } from "../utils/logger";
 function Login() {
   const validationErrors = useActionData();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-
   return <CustomForm validationErrors={validationErrors} />;
 }
 
 export async function action({ request }) {
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+
   const formData = await request.formData();
   const data = {
     email: formData.get("email"),

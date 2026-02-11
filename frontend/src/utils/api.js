@@ -38,7 +38,7 @@ export function useAuthenticatedFetch() {
       if (refreshResponse.ok) {
         logger.debug("Token refreshed successfully!");
 
-        response = await fetch(url, { ...options, credentials: "include" });
+        response = await fetch(API_BASE_URL + url, { ...options, credentials: "include" });
         return response;
       } else {
         // Automatically logout
@@ -50,6 +50,8 @@ export function useAuthenticatedFetch() {
             credentials: "include",
           },
         );
+
+        logger.error(logoutResponse);
         setIsLoading(false);
         setIsLoggedIn(false);
         setPrevChats([]);

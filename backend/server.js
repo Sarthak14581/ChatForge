@@ -8,12 +8,15 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = 8080;
+
+const FRONTEND_URL = process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : "http://localhost:5173";
+
  
 // these are usefull when interacting with the frontend
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: "https://chat-forge-beta.vercel.app", // your frontend
+    origin: FRONTEND_URL, // your frontend
     credentials: true,               // 🔑 REQUIRED for cookie to store in the browser
   }));
 

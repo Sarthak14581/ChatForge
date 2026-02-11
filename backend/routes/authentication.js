@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
       secure: true,
       sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 4,
-      path: "gpt/refresh",
+      path: "/gpt/refresh",
     });
 
     res.status(200).json({ message: "You are logged in" });
@@ -119,7 +119,7 @@ router.post("/signup", async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 4,
       secure: true,
       sameSite: "none",
-      path: "/gtp/refresh",
+      path: "/gpt/refresh",
     });
 
     return res.status(201).json({ message: "new user created successfully" });
@@ -150,11 +150,12 @@ router.get("/verify", async (req, res) => {
 
 // route to logout user from the frontend
 router.post("/refresh/logout", async (req, res) => {
+
   try {
     const token = req.cookies.token;
     const refreshToken = req.cookies.refreshToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    logger.debug(decoded)
+    logger.debug(decoded);
     
     const { id } = decoded;
     const { tokenId } = jwt.verify(refreshToken, process.env.JWT_SECRET);
@@ -171,6 +172,7 @@ router.post("/refresh/logout", async (req, res) => {
 router.post("/refresh", async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
+    logger.debug("refreshToken /refresh: ", refreshToken);
     if (!refreshToken)
       return res.status(401).json({ message: "Session Expired" });
 
@@ -186,7 +188,7 @@ router.post("/refresh", async (req, res) => {
     // check if the token belongs to the user or not
     if (!user.refreshTokens.includes(tokenId)) {
       return res.status(401).json({ error: "Session revoked" });
-    }
+    } 
 
     const payload = { id: userId, userName: user.userName };
     const token = generateJwtToken(payload);
