@@ -1,6 +1,6 @@
 import "./ChatWindow.css";
 import Chat from "./Chat.jsx";
-import { useContext, useEffect, useRef, useState } from "react";
+import { use, useContext, useEffect, useRef, useState } from "react";
 import { MyContext } from "./store/MyContext.jsx";
 import { ScaleLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import { useAuthenticatedFetch } from "./utils/api.js";
 import { logger } from "./utils/logger.js";
 
-function ChatWindow() {
+function ChatWindow({onToggleSidebar}) {
   const authFetch = useAuthenticatedFetch();
 
   const {
@@ -28,7 +28,7 @@ function ChatWindow() {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-  
+
   const [isOpen, setIsOpen] = useState(false);
 
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -57,13 +57,7 @@ function ChatWindow() {
 
     try {
       setIsLoading(true);
-      const response = await authFetch(
-        "/api/chat",
-        options,
-      );
-
-      
-      
+      const response = await authFetch("/api/chat", options);
 
       if (response.status === 401) {
         toast.error("Log In to Chat");
@@ -72,7 +66,7 @@ function ChatWindow() {
 
       // we get reply for the current prompt from the user
       const data = await response.json();
-      logger.debug("Data in getReply chatwindow",data);
+      logger.debug("Data in getReply chatwindow", data);
       // we set the reply from the gpt api
       setReply(data.reply);
       setIsLoading(false);
@@ -118,13 +112,10 @@ function ChatWindow() {
 
   // logouts the user by sending post request to logut
   async function handleLogout() {
-    const response = await authFetch(
-      "/gpt/refresh/logout",
-      {
-        credentials: "include",
-        method: "POST",
-      },
-    );
+    const response = await authFetch("/gpt/refresh/logout", {
+      credentials: "include",
+      method: "POST",
+    });
 
     if (response.ok) {
       toast.success("You are Logged Out");
@@ -157,9 +148,23 @@ function ChatWindow() {
   return (
     <div className="chatWindow">
       <div className="navbar">
-        <span>
+        <div className="navbar-left">
+          <button
+          className="menu-btn"
+          type="button"
+          aria-label="Toggle sidebar"
+          onClick={onToggleSidebar}
+        >
+          <i className="fa-solid fa-bars"></i>
+        </button>
+
+
+        <span className="navbar-brand" >
           ChatForge <i className="fa-solid fa-chevron-down"></i>
         </span>
+        </div>
+
+        
 
         {isLoggedIn ? (
           <div className="userIconDiv" onClick={handleProfileClick}>
@@ -176,7 +181,7 @@ function ChatWindow() {
               </Link>
               <Link to={"/login"}>
                 {" "}
-                <button>Log In</button>{" "}
+                <button>LogIn</button>{" "}
               </Link>
             </div>
           </div>

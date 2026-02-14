@@ -128,9 +128,11 @@ router.post("/chat", jwtAuthMiddleware, async (req, res) => {
       // hence we create a new thread in the db
       thread = new Thread({
         threadId: threadId,
-        title: message,
         messages: [{ role: "user", content: message }],
       });
+      const title = await summarizer(thread, message);
+      console.log(title);
+      thread.title = title;
       user.chats.push({ threadId });
       await user.save();
     } else {

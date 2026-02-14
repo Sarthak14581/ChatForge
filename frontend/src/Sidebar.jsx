@@ -8,7 +8,7 @@ import { AuthContext } from "./store/AuthContext";
 import { useAuthenticatedFetch } from "./utils/api";
 import { logger } from "./utils/logger";
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const authFetch = useAuthenticatedFetch();
 
   const {
@@ -39,10 +39,10 @@ export default function Sidebar() {
           title: thread.title,
         }));
         setAllThreads(filteredData);
-        logger.debug(filteredData)
+        logger.debug(filteredData);
       }
     } catch (error) {
-      logger.error(error)
+      logger.error(error);
     }
   };
 
@@ -69,9 +69,7 @@ export default function Sidebar() {
     setCurrentThreadId(newThreadId);
 
     try {
-      const response = await authFetch(
-        `/api/thread/${newThreadId}`,
-      );
+      const response = await authFetch(`/api/thread/${newThreadId}`);
       const data = await response.json();
       logger.debug(data);
 
@@ -87,12 +85,9 @@ export default function Sidebar() {
 
   async function deleteThread(threadId) {
     try {
-      const response = await authFetch(
-        `/api/thread/${threadId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response = await authFetch(`/api/thread/${threadId}`, {
+        method: "DELETE",
+      });
       const data = await response.json();
 
       if (response.ok) {
@@ -114,7 +109,20 @@ export default function Sidebar() {
   }
 
   return (
-    <section className="sidebar">
+    <section className={`sidebar ${isOpen ? "open" : ""}`}>
+
+      <div className="sidebar-mobile-header">
+        {/* <img src={logoImage} alt="chatForge logo" className="logo" /> */}
+        <button
+          className="sidebar-close"
+          type="button"
+          aria-label="Close sidebar"
+          onClick={onClose}
+        >
+          <i className="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
       {/* new chat button */}
       <button onClick={startNewChat}>
         <img src={logoImage} alt="chatForge logo" className="logo" />

@@ -4,10 +4,14 @@
     font-family: Roboto, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+
+
 body {
     margin: 0;
     padding: 0;
-
+    background-color: var(--bg-primary);
+    overflow: hidden;
+    height: 100%;
 }
 
 .app {
@@ -50,5 +54,15 @@ body.light {
   --box-shadow-dark: rgba(0, 0, 0, 0.15) 0px 5px 15px;
 }
 
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: none;
+}
 
-
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+  }
+}

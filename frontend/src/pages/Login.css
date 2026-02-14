@@ -4,16 +4,19 @@
     height: 100vh;
     text-align: center;
     display: flex;
+    align-items: center;
     justify-content: center;
+    margin: auto;
 }
 
 .login-form {
 background-color: var(--bg-primary);
-width: 400px;
+width: 100%;
+max-width: 400px;
 padding: 3rem;
  display: flex;
  flex-direction: column;
- margin-top: 7rem;
+ /* margin-top: 7rem; */
  gap: 1.5rem; 
  border: 1px solid var(--border-color); 
  border-radius: 1rem;
@@ -27,7 +30,7 @@ padding: 3rem;
 }
 
 .input-div input {
-    width: 90%;
+    width: 100%;
     border: none;
     /* background-color: rgba(255, 255, 255, 0.05); */
     background-color: var(--user-message-bg);
@@ -39,6 +42,7 @@ padding: 3rem;
                 rgba(0, 0, 0, 0.05) 0 4px 6px
                 rgba(0, 0, 0, 0.05) 0 12px 3px
                 rgba(0, 0, 0, 0.05) 0 -3px 5px;
+    box-sizing: border-box;
 }
 
 .input-div label {
@@ -48,6 +52,49 @@ padding: 3rem;
 
 .login-form button {
     width: 100px;
+    max-width: 200px;
     padding: 0.7rem;
-    margin: 1rem;
+    margin: 1rem auto;
+}
+
+@media (max-width: 768px) {
+
+    .login-div {
+        padding: 1rem;
+        align-items: center;
+    }
+
+    .login-form {
+        max-width: 72%;
+        padding: 3rem 2.5rem;
+        gap: 1.25rem;
+        box-shadow: var(--box-shadow-dark);
+    }
+
+    .login-form h1 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .input-div {
+        gap: 0.5rem;
+    }
+
+    .input-div label {
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .input-div input {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+    }
+
+    .login-form button {
+        max-width: 100%;
+        padding: 0.75rem;
+        margin: 0.5rem 0 0 0;
+        font-size: 0.95rem;
+    }
 }

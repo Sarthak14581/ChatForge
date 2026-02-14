@@ -17,6 +17,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 1rem;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+}
+
+.navbar-brand {
+    margin: 0;
+    font-weight: 300;
 }
 
 .navbar span {
@@ -151,4 +163,35 @@ input:focus {
 
 .log-sign-btn a {
     text-decoration: none;
+}
+
+.menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        gap: 0.5rem;
+        padding: 0 0.75rem;
+    }
+
+    .navbar span {
+        margin: 1rem 0.5rem;
+    }
+
+    .menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .inputBox {
+        width: 85%;
+    }
 }
