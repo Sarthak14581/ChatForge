@@ -16,7 +16,7 @@ const FRONTEND_URL = process.env.NODE_ENV === "production" ? process.env.FRONTEN
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: FRONTEND_URL, // your frontend
+    origin: [FRONTEND_URL, "*"], // your frontend
     credentials: true,               // 🔑 REQUIRED for cookie to store in the browser
   }));
 

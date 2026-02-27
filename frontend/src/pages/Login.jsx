@@ -1,15 +1,17 @@
-import { data, Form, redirect, useActionData } from "react-router-dom";
+import { data, Form, redirect, useActionData, useNavigation } from "react-router-dom";
 import "./Login.css";
 import CustomForm from "../components/CustomForm";
-import { useContext, useEffect } from "react";
+import { useActionState, useContext, useEffect } from "react";
 import { AuthContext } from "../store/AuthContext";
 import toast from "react-hot-toast";
 import { logger } from "../utils/logger";
 
+
 function Login() {
   const validationErrors = useActionData();
-
-  return <CustomForm validationErrors={validationErrors} />;
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+  return <CustomForm validationErrors={validationErrors} isSubmitting={isSubmitting}/>;
 }
 
 export async function action({ request }) {

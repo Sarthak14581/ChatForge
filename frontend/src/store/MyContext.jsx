@@ -29,6 +29,7 @@ export default function ContextWrapper({children}) {
   const [allThreads, setAllThreads] = useState([]); // all threads that we use to show history
   // const [isLoggedIn, setIsLoggedIn] = useState(false); // to reflect if user is logged in or not
   const [isLoading, setIsLoading] = useState(false);
+  const [isPrevChatsLoading, setIsPrevChatsLoading] = useState(false);
 
   const providerValues = {
     prompt,
@@ -44,7 +45,9 @@ export default function ContextWrapper({children}) {
     allThreads,
     setAllThreads,
     isLoading,
-    setIsLoading
+    setIsLoading,
+    setIsPrevChatsLoading,
+    isPrevChatsLoading
   };
 
   return <MyContext value={providerValues}>{children}</MyContext>;

@@ -167,7 +167,7 @@ function ChatWindow({onToggleSidebar}) {
         
 
         {isLoggedIn ? (
-          <div className="userIconDiv" onClick={handleProfileClick}>
+          <div className="userIconDiv" onClick={handleProfileClick}> 
             <span className="userIcon">
               <i className="fa-solid fa-user"></i>
             </span>

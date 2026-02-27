@@ -4,13 +4,16 @@ import { MyContext } from "./store/MyContext";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
+import {ClipLoader} from "react-spinners"
+import { ThemeContext } from "./store/ThemeContext";
 
 // react-markdown
 // rehype-highlight
 
 function Chat() {
   const [latestReply, setLatestReply] = useState("");
-  const { newChat, prevChats, reply } = useContext(MyContext);
+  const {theme} = useContext(ThemeContext);
+  const { newChat, prevChats, reply, isPrevChatsLoading } = useContext(MyContext);
 
   useEffect(() => {
 
@@ -48,6 +51,7 @@ function Chat() {
     <>
       {newChat && <h1>Where Should We Begin</h1>}
       <div className="chats">
+        <ClipLoader loading={isPrevChatsLoading} color={theme === "dark" ? "#fff": "#000"} />
         {/* remove the last reply from the chat so we can print it with typing effect */}
         {prevChats?.slice(0, -1).map((chat, idx) => {
           const markdown = chat.content;

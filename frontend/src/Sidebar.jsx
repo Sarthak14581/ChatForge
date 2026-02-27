@@ -21,6 +21,7 @@ export default function Sidebar({ isOpen, onClose }) {
     setPrompt,
     setReply,
     setPrevChats,
+    setIsPrevChatsLoading,
   } = useContext(MyContext);
 
   const { isLoggedIn } = useContext(AuthContext);
@@ -66,6 +67,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   async function changeThread(newThreadId) {
     // set current thread id to load the current     chats of this thread
+    setIsPrevChatsLoading(true);
     setCurrentThreadId(newThreadId);
 
     try {
@@ -78,6 +80,7 @@ export default function Sidebar({ isOpen, onClose }) {
       setNewChat(false);
       // setPrompt("")
       setReply(null);
+      setIsPrevChatsLoading(false);
     } catch (error) {
       logger.error(error);
     }

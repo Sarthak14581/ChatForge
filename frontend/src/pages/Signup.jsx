@@ -1,11 +1,14 @@
 import React from "react";
 import CustomForm from "../components/CustomForm";
-import { redirect } from "react-router-dom";
+import { redirect, useNavigation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { logger } from "../utils/logger";
 
 function Signup() {
-  return <CustomForm signup={true} />;
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
+  return <CustomForm signup={true} isSubmitting={isSubmitting}/>;
 }
 
 export async function action({ request }) {

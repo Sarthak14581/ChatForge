@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import "../pages/Login.css";
 import { Form } from "react-router-dom";
 import toast from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
+import { ThemeContext } from "../store/ThemeContext";
 
-function CustomForm({ signup, validationErrors }) {
+function CustomForm({ signup, validationErrors, isSubmitting }) {
+  const { theme } = useContext(ThemeContext);
+  
   return (
     <>
       <div className="login-div">
@@ -46,7 +50,14 @@ function CustomForm({ signup, validationErrors }) {
                 required
               />
             </div>
-            <button>{signup ? "Signup" : "Login"}</button>
+            <button>
+              {signup ? "Signup" : "Login"}{" "}
+              <ClipLoader
+                loading={isSubmitting}
+                size={18}
+                color={theme === "dark" ? "#fff" : "#000"}
+              />{" "}
+            </button>
           </div>
         </Form>
       </div>
