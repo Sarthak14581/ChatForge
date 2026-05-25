@@ -8,7 +8,7 @@ import { AuthContext } from "./store/AuthContext";
 import { useAuthenticatedFetch } from "./utils/api";
 import { logger } from "./utils/logger";
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function Sidebar({ isOpen, onClose, setIsOpen  }) {
   const authFetch = useAuthenticatedFetch();
 
   const {
@@ -55,6 +55,7 @@ export default function Sidebar({ isOpen, onClose }) {
   }, [currentThreadId, isLoggedIn]);
 
   function startNewChat() {
+    onClose();
     // if the prev chat was there then create a new chat otherwise the user is on the new chat
     if (prevChats.length) {
       setNewChat(true);
@@ -71,6 +72,7 @@ export default function Sidebar({ isOpen, onClose }) {
     setCurrentThreadId(newThreadId);
 
     try {
+      onClose();
       const response = await authFetch(`/api/thread/${newThreadId}`);
       const data = await response.json();
       logger.debug(data);
@@ -78,6 +80,7 @@ export default function Sidebar({ isOpen, onClose }) {
       // set chat of the new current threadId
       setPrevChats(data);
       setNewChat(false);
+      
       // setPrompt("")
       setReply(null);
       setIsPrevChatsLoading(false);

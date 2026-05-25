@@ -41,6 +41,7 @@ function HomePage() {
       <div className="app">
         <Sidebar
           isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
         <ChatWindow onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)} />
