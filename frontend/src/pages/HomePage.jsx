@@ -4,21 +4,18 @@ import { AuthContext } from "../store/AuthContext.jsx";
 import { useContext, useEffect, useState } from "react";
 import { logger } from "../utils/logger.js";
 import "../App.css"
+import { useAuthenticatedFetch } from "../utils/api.js";
 
 function HomePage() {
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-
+  const authFetch = useAuthenticatedFetch();
   const { setIsLoggedIn } = useContext(AuthContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
   async function checkAuth() {
     logger.debug("useEffect run in home page");
     try {
-      const res = await fetch(
-        `${API_BASE_URL ? API_BASE_URL : "http://localhost:8080"}/gpt/verify`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await authFetch("/gpt/verify")
       const user = await res.json();
       if (res.ok) {
         setIsLoggedIn(true);
